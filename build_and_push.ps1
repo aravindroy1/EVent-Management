@@ -8,7 +8,8 @@ $services = @(
     "EventService",
     "user-service",
     "Payment",
-    "Ticket-Generator"
+    "Ticket-Generator",
+    "frontend"
 )
 
 # Optional: Prompt for docker login or assume user is already logged in
