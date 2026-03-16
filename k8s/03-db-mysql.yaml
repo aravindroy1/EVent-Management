@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-mysql
+  namespace: event-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-mysql
+  template:
+    metadata:
+      labels:
+        app: db-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.3
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: event-management-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: event-management-config
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: event-management-secrets
+                  key: MYSQL_PASSWORD
+            # To initialize multiple DBs, we'll provide a custom script via a ConfigMap.
+          volumeMounts:
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d/init-mysql.sql
+              subPath: init-mysql.sql
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: db-init-scripts
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-mysql
+  namespace: event-management
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: db-mysql

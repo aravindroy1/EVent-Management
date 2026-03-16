@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-scripts
+  namespace: event-management
+data:
+  init-mysql.sql: |
+    CREATE DATABASE IF NOT EXISTS users;
+    CREATE DATABASE IF NOT EXISTS booking_db;
+    CREATE DATABASE IF NOT EXISTS payment_service;
+    GRANT ALL PRIVILEGES ON users.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON booking_db.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON payment_service.* TO 'root'@'%';
+    FLUSH PRIVILEGES;
+
+  init-postgres.sql: |
+    CREATE DATABASE event_db;
+    CREATE DATABASE ticket_db;
+    CREATE DATABASE notifications;
